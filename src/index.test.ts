@@ -1,4 +1,10 @@
-import * as gudType from './index'
+import {
+  gudTypeScale,
+  rounder,
+  gudFontSize,
+  gudLineHeight,
+  gudTypeScaleIndex,
+} from './index'
 
 const hierarchy = [
   'zero',
@@ -13,31 +19,42 @@ const hierarchy = [
   'nine',
 ]
 
-const styles = gudType.generateTypeScale(hierarchy)
+const styles = gudTypeScale(hierarchy)
 
 test('rounds correctly', () => {
-  const round = gudType.rounder(1)
-  expect(round(1.1)).toBe(1)
-  expect(round(1.9)).toBe(2)
-  const roundUp = gudType.rounder(1, 'up')
-  expect(roundUp(1.1)).toBe(2)
-  const roundDown = gudType.rounder(1, 'down')
-  expect(roundDown(1.9)).toBe(1)
+  const round = rounder(5)
+  expect(round(1)).toBe(0)
+  expect(round(4)).toBe(5)
+  const roundUp = rounder(5, 'up')
+  expect(roundUp(1)).toBe(5)
+  const roundDown = rounder(5, 'down')
+  expect(roundDown(4)).toBe(0)
 })
 
 test('generates a style for each hierarchy item', () => {
-  expect(Object.keys(styles).length).toBe(10)
+  expect(Object.keys(styles).length).toBe(hierarchy.length)
 })
 
-test('calculates consistently across functions.', () => {
+test('calculates consistently across functions', () => {
   const compareStyles: typeof styles = {}
   for (let i = 0; i < hierarchy.length; i++) {
-    const scaleIndex = gudType.getTypeScaleIndex(i);
-    const fontSize = gudType.getFontSize(scaleIndex);
+    const scaleIndex = gudTypeScaleIndex(i)
+    const fontSize = gudFontSize(scaleIndex)
     compareStyles[hierarchy[i]] = {
       fontSize,
-      lineHeight: gudType.getLineHeight(fontSize)
+      lineHeight: gudLineHeight(fontSize),
     }
   }
   expect(compareStyles).toEqual(styles)
+})
+
+test('generates the right types based on options', () => {
+  const {
+    x: { fontSize: numberFontSize },
+  } = gudTypeScale(['x'])
+  expect(typeof numberFontSize).toBe('number')
+  const {
+    x: { fontSize: stringFontSize },
+  } = gudTypeScale(['x'], { unit: 'px' })
+  expect(typeof stringFontSize).toBe('string')
 })

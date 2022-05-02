@@ -1,8 +1,7 @@
-
 /**
  * A util function for calculating a number in the fibonacci sequence at a given
  * index.
- * @param index The index of the number in the sequence to be calculated. 
+ * @param index The index of the number in the sequence to be calculated.
  */
 const fibonacci = (index: number) => {
   let current = 0
@@ -14,22 +13,23 @@ const fibonacci = (index: number) => {
   }
   return index < 0 ? -current : current
 }
-export { fibonacci as getTypeScaleIndex }
-
-const roundMethods = {
-  up: Math.ceil,
-  down: Math.floor,
-}
+export { fibonacci as gudTypeScaleIndex }
 
 /**
  * Returns a new rounding function for rounding to a target multiple.
  * @param targetMultiple The multiple to which the new function will round.
  * @param direction The direction to round.
  */
-export const rounder = (targetMultiple: number, direction?: 'up' | 'down') =>
-  direction
-    ? (num: number) => roundMethods[direction](num / targetMultiple) * targetMultiple
-    : Math.round
+export const rounder = (targetMultiple: number, direction?: 'up' | 'down') => {
+  switch (direction) {
+    case 'up':
+      return (num: number) => Math.ceil(num / targetMultiple) * targetMultiple
+    case 'down':
+      return (num: number) => Math.floor(num / targetMultiple) * targetMultiple
+    default:
+      return (num: number) => Math.round(num / targetMultiple) * targetMultiple
+  }
+}
 
 interface TypeScaleOptions {
   /**
@@ -55,7 +55,7 @@ interface TypeScaleOptions {
  * @param scaleIndex The index of the font size to calculate.
  * @param options Options for the type scale.
  */
-export const getFontSize = (scaleIndex: number, options?: TypeScaleOptions) => {
+export const gudFontSize = (scaleIndex: number, options?: TypeScaleOptions) => {
   const {
     base = 16,
     multiplier = 2,
@@ -83,7 +83,7 @@ interface LineHeightOptions {
  * @param fontSize The font size for which a line height will be calculated.
  * @param options Options for the baseline grid.
  */
-export const getLineHeight = (
+export const gudLineHeight = (
   fontSize: number,
   options?: LineHeightOptions,
 ) => {
@@ -91,7 +91,7 @@ export const getLineHeight = (
   return rounder(gridHeight, 'up')(fontSize * multiplier)
 }
 
-interface GenerateTypeScaleOptions
+interface GenerateTypeScaleOptions<TUnit extends string | undefined>
   extends TypeScaleOptions,
     Omit<LineHeightOptions, 'multiplier'> {
   /**
@@ -137,8 +137,10 @@ interface GenerateTypeScaleOptions
    * from numbers to strings and is useful when passed directly to a CSS in JS
    * library like [styled-components](https://github.com/styled-components/styled-components).
    */
-  unit?: string
+  unit?: TUnit
 }
+
+type Value<Tunit> = Tunit extends undefined ? number : string
 
 /**
  * Generate font sizes and line heights for a given hierarchy of font styles.
@@ -146,9 +148,12 @@ interface GenerateTypeScaleOptions
  *                  line heights for.
  * @param options Options for the type scale.
  */
-export const generateTypeScale = <H extends string>(
-  hierarchy: H[],
-  options?: GenerateTypeScaleOptions,
+export const gudTypeScale = <
+  THierarchy extends string,
+  TUnit extends string | undefined = undefined,
+>(
+  hierarchy: THierarchy[],
+  options?: GenerateTypeScaleOptions<TUnit>,
 ) => {
   const {
     startingIndex = 0,
@@ -162,24 +167,24 @@ export const generateTypeScale = <H extends string>(
     unit,
   } = options || {}
   const typeScale = {} as Record<
-    H,
-    { fontSize: number | string; lineHeight: number | string }
+    THierarchy,
+    { fontSize: Value<TUnit>; lineHeight: Value<TUnit> }
   >
   for (let i = 0; i < hierarchy.length; i++) {
     const scaleIndex = getScaleIndex(i + startingIndex)
-    const fontSize = getFontSize(scaleIndex, {
+    const fontSize = gudFontSize(scaleIndex, {
       base,
       multiplier,
       steps,
       round,
     })
-    const lineHeight = getLineHeight(fontSize, {
+    const lineHeight = gudLineHeight(fontSize, {
       gridHeight,
       multiplier: lineHeightMultiplier,
     })
     typeScale[hierarchy[i]] = {
-      fontSize: unit ? `${fontSize}${unit}` : fontSize,
-      lineHeight: unit ? `${lineHeight}${unit}` : lineHeight,
+      fontSize: (unit ? `${fontSize}${unit}` : fontSize) as Value<TUnit>,
+      lineHeight: (unit ? `${lineHeight}${unit}` : lineHeight) as Value<TUnit>,
     }
   }
   return typeScale
