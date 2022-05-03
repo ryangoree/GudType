@@ -4,13 +4,10 @@ A type scale generator heavily inspired by the
 [Typographic Scale Calculator](http://layoutgridcalculator.com/typographic-scale/)
 from [Jean-Lou Désiré](http://www.jeanlou.net/).
 
-## Example (using [styled-components](https://github.com/styled-components/styled-components))
+## Basic Usage
 
-```jsx
-import { gudTypeScale } from 'gud-type'
-import styled from 'styled-components'
-
-const styles = gudTypeScale(
+```js
+const typeScale = gudTypeScale(
   [
     'footnote',
     'endnote',
@@ -27,19 +24,7 @@ const styles = gudTypeScale(
   { startingIndex: -3, unit: 'px' },
 )
 
-export const Footnote = styled.p(styles.footnote)
-export const Endnote = styled.p(styles.endnote)
-export const Caption = styled.p(styles.caption)
-export const P = styled.p(styles.p)
-export const Blockquote = styled.p(styles.blockquote)
-export const H6 = styled.h6(styles.h6)
-export const H5 = styled.h5(styles.h5)
-export const H4 = styled.h4(styles.h4)
-export const H3 = styled.h3(styles.h3)
-export const H2 = styled.h2(styles.h2)
-export const H1 = styled.h1(styles.h1)
-
-console.log(styles)
+console.log(typeScale)
 // {
 //   footnote: {
 //     fontSize: '12.25px',
@@ -86,6 +71,100 @@ console.log(styles)
 //     lineHeight: '128px',
 //   },
 // }
+```
+
+### Using [Styled Components](https://styled-components.com/)
+
+```js
+import { gudTypeScale } from 'gud-type'
+import styled from 'styled-components'
+
+const styles = gudTypeScale(
+  [
+    'footnote',
+    'endnote',
+    'caption',
+    'p',
+    'blockquote',
+    'h6',
+    'h5',
+    'h4',
+    'h3',
+    'h2',
+    'h1',
+  ],
+  { startingIndex: -3, unit: 'px' },
+)
+
+export const Footnote = styled.p(styles.footnote)
+export const Endnote = styled.p(styles.endnote)
+export const Caption = styled.p(styles.caption)
+export const P = styled.p(styles.p)
+export const Blockquote = styled.p(styles.blockquote)
+export const H6 = styled.h6(styles.h6)
+export const H5 = styled.h5(styles.h5)
+export const H4 = styled.h4(styles.h4)
+export const H3 = styled.h3(styles.h3)
+export const H2 = styled.h2(styles.h2)
+export const H1 = styled.h1(styles.h1)
+```
+
+### Using [Tailwind CSS](https://tailwindcss.com/)
+
+```js
+const { gudTypeScale } = require('gud-type')
+
+const typeScale = gudTypeScale(
+  [
+    'footnote',
+    'endnote',
+    'caption',
+    'p',
+    'blockquote',
+    'h6',
+    'h5',
+    'h4',
+    'h3',
+    'h2',
+    'h1',
+  ],
+  { startingIndex: -3, unit: 'px' }
+)
+
+module.exports = {
+  content: ['./src/**/*.{js,jsx,ts,tsx}'],
+  theme: {
+    extend: {
+      fontSize: {
+        footnote: typeScale.footnote.fontSize,
+        endnote: typeScale.endnote.fontSize,
+        caption: typeScale.caption.fontSize,
+        p: typeScale.p.fontSize,
+        blockquote: typeScale.blockquote.fontSize,
+        h6: typeScale.h6.fontSize,
+        h5: typeScale.h5.fontSize,
+        h4: typeScale.h4.fontSize,
+        h3: typeScale.h3.fontSize,
+        h2: typeScale.h2.fontSize,
+        h1: typeScale.h1.fontSize,
+      },
+      lineHeight: {
+        footnote: typeScale.footnote.lineHeight,
+        endnote: typeScale.endnote.lineHeight,
+        caption: typeScale.caption.lineHeight,
+        p: typeScale.p.lineHeight,
+        blockquote: typeScale.blockquote.lineHeight,
+        h6: typeScale.h6.lineHeight,
+        h5: typeScale.h5.lineHeight,
+        h4: typeScale.h4.lineHeight,
+        h3: typeScale.h3.lineHeight,
+        h2: typeScale.h2.lineHeight,
+        h1: typeScale.h1.lineHeight,
+      },
+    },
+  },
+  plugins: [],
+}
 ```
 
 ## Options
