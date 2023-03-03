@@ -1,6 +1,6 @@
 {
   "name": "gud-type",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "A utility for generating type scales.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
