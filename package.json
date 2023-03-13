@@ -19,13 +19,13 @@
   },
   "keywords": [],
   "author": "@ryegoree (https://twitter.com/ryegoree)",
-  "homepage": "https://github.com/ryangoree/gud-type",
+  "homepage": "https://github.com/ryangoree/GudType",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ryangoree/gud-type"
+    "url": "https://github.com/ryangoree/GudType"
   },
   "bugs": {
-    "url": "https://github.com/ryangoree/gud-type/issues"
+    "url": "https://github.com/ryangoree/GudType/issues"
   },
   "license": "MIT",
   "devDependencies": {
