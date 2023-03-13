@@ -18,7 +18,15 @@
     "postversion": "git push && git push --tags"
   },
   "keywords": [],
-  "author": "",
+  "author": "@ryegoree (https://twitter.com/ryegoree)",
+  "homepage": "https://github.com/ryangoree/gud-type",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ryangoree/gud-type"
+  },
+  "bugs": {
+    "url": "https://github.com/ryangoree/gud-type/issues"
+  },
   "license": "MIT",
   "devDependencies": {
     "@types/jest": "^27.4.1",
