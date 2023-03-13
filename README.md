@@ -73,42 +73,6 @@ console.log(typeScale)
 // }
 ```
 
-### Using [Styled Components](https://styled-components.com/)
-
-```js
-import { gudTypeScale } from 'gud-type'
-import styled from 'styled-components'
-
-const styles = gudTypeScale(
-  [
-    'footnote',
-    'endnote',
-    'caption',
-    'p',
-    'blockquote',
-    'h6',
-    'h5',
-    'h4',
-    'h3',
-    'h2',
-    'h1',
-  ],
-  { startingIndex: -3, unit: 'px' },
-)
-
-export const Footnote = styled.p(styles.footnote)
-export const Endnote = styled.p(styles.endnote)
-export const Caption = styled.p(styles.caption)
-export const P = styled.p(styles.p)
-export const Blockquote = styled.p(styles.blockquote)
-export const H6 = styled.h6(styles.h6)
-export const H5 = styled.h5(styles.h5)
-export const H4 = styled.h4(styles.h4)
-export const H3 = styled.h3(styles.h3)
-export const H2 = styled.h2(styles.h2)
-export const H1 = styled.h1(styles.h1)
-```
-
 ### Using [Tailwind CSS](https://tailwindcss.com/)
 
 ```js
@@ -165,6 +129,42 @@ module.exports = {
   },
   plugins: [],
 }
+```
+
+### Using [Styled Components](https://styled-components.com/)
+
+```js
+import { gudTypeScale } from 'gud-type'
+import styled from 'styled-components'
+
+const styles = gudTypeScale(
+  [
+    'footnote',
+    'endnote',
+    'caption',
+    'p',
+    'blockquote',
+    'h6',
+    'h5',
+    'h4',
+    'h3',
+    'h2',
+    'h1',
+  ],
+  { startingIndex: -3, unit: 'px' },
+)
+
+export const Footnote = styled.p(styles.footnote)
+export const Endnote = styled.p(styles.endnote)
+export const Caption = styled.p(styles.caption)
+export const P = styled.p(styles.p)
+export const Blockquote = styled.p(styles.blockquote)
+export const H6 = styled.h6(styles.h6)
+export const H5 = styled.h5(styles.h5)
+export const H4 = styled.h4(styles.h4)
+export const H3 = styled.h3(styles.h3)
+export const H2 = styled.h2(styles.h2)
+export const H1 = styled.h1(styles.h1)
 ```
 
 ## Options
