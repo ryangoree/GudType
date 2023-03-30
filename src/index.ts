@@ -13,7 +13,22 @@ const fibonacci = (index: number) => {
   }
   return index < 0 ? -current : current
 }
-export { fibonacci as gudTypeScaleIndex }
+
+/**
+ * A util function for getting a index on a scale for a given hierarchy index.
+ * This uses the fibonacci sequence under the hood, but skips `fibonacci(2)` to
+ * avoid repeat values.
+ * @param index The hierarchy index of the type style.
+ */
+export function gudTypeScaleIndex(index: number) {
+  if (index > 1) {
+    return fibonacci(index + 1)
+  }
+  if (index < -1) {
+    return fibonacci(index - 1)
+  }
+  return fibonacci(index)
+}
 
 /**
  * Returns a new rounding function for rounding to a target multiple.
@@ -109,19 +124,18 @@ interface GenerateTypeScaleOptions<TUnit extends string | undefined>
    *
    * **Example**
    *
-   * given the following hierarchy:
-   * `[body, bodyLarge, h6, h5, h4, h3, h2, h1]`
+   * given the following hierarchy: `[body, bodyLarge, h6, h5, h4, h3, h2, h1]`
    *
-   * and the following scale *(base: 16, multiplier: 2, steps: 4)*:
-   * `[12, 15, 18, 21, 24, 30, 36, 42, 48, 56, 64, 80, 96, 120]`
+   * and the following scale *(base: 16, multiplier: 2, steps: 4)*: `[12, 15,
+   * 18, 21, 24, 30, 36, 42, 48, 56, 64, 80, 96, 120]`
    *
    * A 1 to 1 fn of `(i) => i` would mean body *(hierarchy index 0)* would be 12
-   * *(scale index 0)*, and h1 *(hierarchy index 7)* would be 42
-   * *(scale index 7)*.
+   * *(scale index 0)*, and h1 *(hierarchy index 7)* would be 42 *(scale index
+   * 7)*.
    *
-   * Using the fibonacci sequence *(the default method)*, `(i) => fibonacci(i)`,
-   * body *(hierarchy index 0)* would be 12 *(scale index 0)*, and h1
-   * *(hierarchy index 7)* would be 120 *(scale index 13)*.
+   * Using the fibonacci sequence, `(i) => fibonacci(i)`, body *(hierarchy index
+   * 0)* would be 12 *(scale index 0)*, and h1 *(hierarchy index 7)* would be
+   * 120 *(scale index 13)*.
    */
   getScaleIndex?: (hierarchyIndex: number) => number
 
@@ -157,7 +171,7 @@ export const gudTypeScale = <
 ) => {
   const {
     startingIndex = 0,
-    getScaleIndex = fibonacci,
+    getScaleIndex = gudTypeScaleIndex,
     base,
     multiplier,
     steps,
