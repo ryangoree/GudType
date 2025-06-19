@@ -10,10 +10,8 @@ from [Jean-Lou Désiré](http://www.jeanlou.net/).
 const typeScale = gudTypeScale(
   [
     'footnote',
-    'endnote',
     'caption',
     'p',
-    'blockquote',
     'h6',
     'h5',
     'h4',
@@ -21,7 +19,7 @@ const typeScale = gudTypeScale(
     'h2',
     'h1',
   ],
-  { startingIndex: -3, unit: 'px' },
+  { baseIndex: 2, unit: 'px' },
 )
 
 console.log(typeScale)
@@ -30,10 +28,6 @@ console.log(typeScale)
 //     fontSize: '12.25px',
 //     lineHeight: '16px',
 //   },
-//   endnote: {
-//     fontSize: '14px',
-//     lineHeight: '24px',
-//   },
 //   caption: {
 //     fontSize: '14px',
 //     lineHeight: '24px',
@@ -41,10 +35,6 @@ console.log(typeScale)
 //   p: {
 //     fontSize: '16px',
 //     lineHeight: '24px',
-//   },
-//   blockquote: {
-//     fontSize: '18.5px',
-//     lineHeight: '32px',
 //   },
 //   h6: {
 //     fontSize: '18.5px',
@@ -81,10 +71,8 @@ const { gudTypeScale } = require('gud-type')
 const typeScale = gudTypeScale(
   [
     'footnote',
-    'endnote',
     'caption',
     'p',
-    'blockquote',
     'h6',
     'h5',
     'h4',
@@ -92,7 +80,7 @@ const typeScale = gudTypeScale(
     'h2',
     'h1',
   ],
-  { startingIndex: -3, unit: 'px' }
+  { baseIndex: 3, unit: 'px' }
 )
 
 module.exports = {
@@ -101,10 +89,8 @@ module.exports = {
     extend: {
       fontSize: {
         footnote: typeScale.footnote.fontSize,
-        endnote: typeScale.endnote.fontSize,
         caption: typeScale.caption.fontSize,
         p: typeScale.p.fontSize,
-        blockquote: typeScale.blockquote.fontSize,
         h6: typeScale.h6.fontSize,
         h5: typeScale.h5.fontSize,
         h4: typeScale.h4.fontSize,
@@ -114,10 +100,8 @@ module.exports = {
       },
       lineHeight: {
         footnote: typeScale.footnote.lineHeight,
-        endnote: typeScale.endnote.lineHeight,
         caption: typeScale.caption.lineHeight,
         p: typeScale.p.lineHeight,
-        blockquote: typeScale.blockquote.lineHeight,
         h6: typeScale.h6.lineHeight,
         h5: typeScale.h5.lineHeight,
         h4: typeScale.h4.lineHeight,
@@ -140,10 +124,8 @@ import styled from 'styled-components'
 const styles = gudTypeScale(
   [
     'footnote',
-    'endnote',
     'caption',
     'p',
-    'blockquote',
     'h6',
     'h5',
     'h4',
@@ -151,14 +133,12 @@ const styles = gudTypeScale(
     'h2',
     'h1',
   ],
-  { startingIndex: -3, unit: 'px' },
+  { baseIndex: 3, unit: 'px' },
 )
 
 export const Footnote = styled.p(styles.footnote)
-export const Endnote = styled.p(styles.endnote)
 export const Caption = styled.p(styles.caption)
 export const P = styled.p(styles.p)
-export const Blockquote = styled.p(styles.blockquote)
 export const H6 = styled.h6(styles.h6)
 export const H5 = styled.h5(styles.h5)
 export const H4 = styled.h4(styles.h4)
@@ -218,15 +198,16 @@ interface GenerateTypeScaleOptions {
   unit?: string
 
   /**
-   * starting hierarchy index
+   * The index of the base font size in the hierarchy.
    *
    * This is useful if you want some styles smaller than the base.
    *
-   * For example, if the hierarchy is `[footnote, body, ...]`, and body should be
-   * equal to the base, than the `startingIndex` would be `-1`.
+   * For example, if the hierarchy is `[footnote, body, ...]`, then the
+   * `baseIndex` would be `1` to make the body font size the base font size.
+   *
    * @default 0
    */
-  startingIndex?: number
+  baseIndex?: number;
 
   /**
    * A function to convert hierarchy indexes to scale indexes
@@ -243,7 +224,7 @@ interface GenerateTypeScaleOptions {
    * *(scale index 0)*, and h1 *(hierarchy index 7)* would be 42
    * *(scale index 7)*.
    *
-   * Using the fibonacci sequence *(the default method)*, `(i) => fibonacci(i)`,
+   * Using the fibonacci sequence, `(i) => fibonacci(i)`,
    * body *(hierarchy index 0)* would be 12 *(scale index 0)*, and h1
    * *(hierarchy index 7)* would be 120 *(scale index 13)*.
    * @default fibonacci

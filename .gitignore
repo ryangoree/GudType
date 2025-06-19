@@ -1,5 +1,40 @@
-node_modules
-/lib
+# Local
+*.env
+*.pem
+*.local
+
+# Logs
+logs
+_.log
+
+# Artifacts
+build
+cache
+dist
+generated
+lib
+out
+
+# Testing
+coverage
+
+# Package Manager
 *.tgz
-/coverage
+node_modules
+yarn-debug.log*
+yarn-error.log*
+
+# Language
+*.tsbuildinfo
+
+# Lib cache
+.turbo
+.vercel
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# OS
 .DS_Store

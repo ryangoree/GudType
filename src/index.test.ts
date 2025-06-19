@@ -1,60 +1,78 @@
+import assert from 'node:assert';
+import test from 'node:test';
 import {
-  gudTypeScale,
-  rounder,
   gudFontSize,
   gudLineHeight,
+  gudTypeScale,
   gudTypeScaleIndex,
-} from './index'
+  rounder,
+} from './index';
 
 const hierarchy = [
-  'zero',
-  'one',
-  'two',
-  'three',
-  'four',
-  'five',
-  'six',
-  'seven',
-  'eight',
-  'nine',
-]
+  'footnote',
+  'caption',
+  'p',
+  'h6',
+  'h5',
+  'h4',
+  'h3',
+  'h2',
+  'h1',
+] as const;
+const baseIndex = 2;
+const styles = gudTypeScale(hierarchy, {
+  baseIndex,
+  base: 16,
+  getScaleIndex: (i) => {
+    const abs = Math.abs(i) ** 1.4;
+    return i < 0 ? -abs : abs;
+  },
+});
 
-const styles = gudTypeScale(hierarchy)
+for (const style of hierarchy.toReversed()) {
+  console.log(
+    `${style}: ${styles[style].fontSize} (${styles[style].lineHeight})`
+  );
+}
+// console.log(styles);
 
 test('rounds correctly', () => {
-  const round = rounder(5)
-  expect(round(1)).toBe(0)
-  expect(round(4)).toBe(5)
-  const roundUp = rounder(5, 'up')
-  expect(roundUp(1)).toBe(5)
-  const roundDown = rounder(5, 'down')
-  expect(roundDown(4)).toBe(0)
-})
+  const round = rounder(5);
+  assert.strictEqual(round(1), 0);
+  assert.strictEqual(round(4), 5);
+  const roundUp = rounder(5, 'up');
+  assert.strictEqual(roundUp(1), 5);
+  const roundDown = rounder(5, 'down');
+  assert.strictEqual(roundDown(4), 0);
+});
 
 test('generates a style for each hierarchy item', () => {
-  expect(Object.keys(styles).length).toBe(hierarchy.length)
-})
+  assert.equal(Object.keys(styles).length, hierarchy.length);
+});
 
 test('calculates consistently across functions', () => {
-  const compareStyles: typeof styles = {}
+  const compareStyles = {} as typeof styles;
   for (let i = 0; i < hierarchy.length; i++) {
-    const scaleIndex = gudTypeScaleIndex(i)
-    const fontSize = gudFontSize(scaleIndex)
+    const hierarchyIndex = i - baseIndex;
+    const scaleIndex = gudTypeScaleIndex(hierarchyIndex);
+    const fontSize = gudFontSize(scaleIndex);
     compareStyles[hierarchy[i]] = {
       fontSize,
       lineHeight: gudLineHeight(fontSize),
-    }
+      scaleIndex,
+      relativeSize: fontSize / 16,
+    };
   }
-  expect(compareStyles).toEqual(styles)
-})
+  assert.deepStrictEqual(compareStyles, styles);
+});
 
 test('generates the right types based on options', () => {
   const {
     x: { fontSize: numberFontSize },
-  } = gudTypeScale(['x'])
-  expect(typeof numberFontSize).toBe('number')
+  } = gudTypeScale(['x']);
+  assert.strictEqual(typeof numberFontSize, 'number');
   const {
     x: { fontSize: stringFontSize },
-  } = gudTypeScale(['x'], { unit: 'px' })
-  expect(typeof stringFontSize).toBe('string')
-})
+  } = gudTypeScale(['x'], { unit: 'px' });
+  assert.strictEqual(typeof stringFontSize, 'string');
+});
