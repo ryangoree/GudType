@@ -3,9 +3,26 @@
   "description": "A utility for generating type scales.",
   "version": "1.0.0",
   "license": "MIT",
+  "author": "Ryan Goree (https://github.com/ryangoree)",
+  "repository": "https://github.com/ryangoree/gud-typescale",
+  "sideEffects": false,
   "type": "module",
+  "files": [
+    "dist"
+  ],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "devDependencies": {
+    "@biomejs/biome": "^2.0.0",
+    "@changesets/cli": "^2.29.4",
+    "@types/node": "^24.0.3",
+    "typescript": "^5.8.3"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "watch": "tsc -p tsconfig.build.json --watch",
+    "release": "changeset publish"
+  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -20,20 +37,7 @@
       ]
     }
   },
-  "scripts": {
-    "build": "tsc -p tsconfig.build.json",
-    "watch": "tsc -p tsconfig.build.json --watch",
-    "release": "changeset publish"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "^2.0.0",
-    "@changesets/cli": "^2.29.4",
-    "@types/node": "^24.0.3",
-    "typescript": "^5.8.3"
-  },
-  "author": {
-    "name": "Ryan Goree",
-    "url": "https://github.com/ryangoree"
-  },
-  "repository": "https://github.com/ryangoree/gud-typescale"
+  "publishConfig": {
+    "access": "public"
+  }
 }
