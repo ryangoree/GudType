@@ -1,11 +1,11 @@
 /**
- * A util function for getting a index on a scale for a given hierarchy index.
- * This uses the fibonacci sequence under the hood, but skips `fibonacci(2)` to
- * avoid repeat values.
+ * A util function for getting an index on a scale for a given hierarchy index.
+ * Uses a power function to ensure that the scale is not linear, with special
+ * handling for negative indexes.
  *
  * @param index - The hierarchy index of the type style.
  */
-export function gudTypeScaleIndex(index: number) {
+export function gudTypeScaleIndex(index: number): number {
   const abs = Math.abs(index) ** 1.4;
   return index < 0 ? -abs : abs;
 }
@@ -16,16 +16,19 @@ export function gudTypeScaleIndex(index: number) {
  * @param targetMultiple - The multiple to which the new function will round.
  * @param direction - The direction to round.
  */
-export const rounder = (targetMultiple: number, direction?: 'up' | 'down') => {
+export function rounder(
+  targetMultiple: number,
+  direction?: 'up' | 'down',
+): (n: number) => number {
   switch (direction) {
     case 'up':
-      return (num: number) => Math.ceil(num / targetMultiple) * targetMultiple;
+      return (n: number) => Math.ceil(n / targetMultiple) * targetMultiple;
     case 'down':
-      return (num: number) => Math.floor(num / targetMultiple) * targetMultiple;
+      return (n: number) => Math.floor(n / targetMultiple) * targetMultiple;
     default:
-      return (num: number) => Math.round(num / targetMultiple) * targetMultiple;
+      return (n: number) => Math.round(n / targetMultiple) * targetMultiple;
   }
-};
+}
 
 interface TypeScaleOptions {
   /**
@@ -63,7 +66,10 @@ interface TypeScaleOptions {
  * @param scaleIndex - The index of the font size to calculate.
  * @param options - Options for the type scale.
  */
-export const gudFontSize = (scaleIndex: number, options?: TypeScaleOptions) => {
+export function gudFontSize(
+  scaleIndex: number,
+  options?: TypeScaleOptions,
+): number {
   const {
     base = 16,
     multiplier = 2,
@@ -71,7 +77,7 @@ export const gudFontSize = (scaleIndex: number, options?: TypeScaleOptions) => {
     round = rounder(0.25, 'up'),
   } = options || {};
   return round(base * multiplier ** (scaleIndex / steps));
-};
+}
 
 interface LineHeightOptions {
   /**
@@ -97,16 +103,31 @@ interface LineHeightOptions {
  * @param fontSize - The font size for which a line height will be calculated.
  * @param options - Options for the baseline grid.
  */
-export const gudLineHeight = (
+export function gudLineHeight(
   fontSize: number,
-  options?: LineHeightOptions
-) => {
+  options?: LineHeightOptions,
+): number {
   const { multiplier = 1.3, gridHeight = 8 } = options || {};
   return rounder(gridHeight, 'up')(fontSize * multiplier);
-};
+}
 
-interface GenerateTypeScaleOptions<TUnit extends string | undefined>
-  extends TypeScaleOptions,
+export type TypeScaleValue<TUnit> = TUnit extends undefined ? number : string;
+
+export type TypeScale<
+  THierarchy extends string = string,
+  TUnit extends string | undefined = undefined,
+> = Record<
+  THierarchy,
+  {
+    fontSize: TypeScaleValue<TUnit>;
+    lineHeight: TypeScaleValue<TUnit>;
+    relativeSize: number;
+  }
+>;
+
+export interface GenerateTypeScaleOptions<
+  TUnit extends string | undefined = undefined,
+> extends TypeScaleOptions,
     Omit<LineHeightOptions, 'multiplier'> {
   /**
    * The index of the base font size in the hierarchy.
@@ -125,18 +146,17 @@ interface GenerateTypeScaleOptions<TUnit extends string | undefined>
    *
    * **Example**
    *
-   * given the following hierarchy: `[body, bodyLarge, h6, h5, h4, h3, h2, h1]`
+   * given the following hierarchy: `['body', 'h6', 'h5', 'h4', 'h3', 'h2',
+   * 'h1']` and the following scale: `[12, 14, 16, 18.25, 21, 24, 27.75, 31.75,
+   * 36.5, 42, 48]` *(base: 12, multiplier: 2, steps: 5)*
    *
-   * and the following scale *(base: 16, multiplier: 2, steps: 4)*: `[12, 15,
-   * 18, 21, 24, 30, 36, 42, 48, 56, 64, 80, 96, 120]`
+   * A 1 to 1 fn of `(i) => i` would mean `"body"` *(hierarchy index 0)* would
+   * be `12` *(scale index 0)*, and `"h1"` *(hierarchy index 6)* would be
+   * `27.75` *(scale index 6)*.
    *
-   * A 1 to 1 fn of `(i) => i` would mean body *(hierarchy index 0)* would be 12
-   * *(scale index 0)*, and h1 *(hierarchy index 7)* would be 42 *(scale index
-   * 7)*.
-   *
-   * Using the fibonacci sequence, `(i) => fibonacci(i)`, body *(hierarchy index
-   * 0)* would be 12 *(scale index 0)*, and h1 *(hierarchy index 7)* would be
-   * 120 *(scale index 13)*.
+   * Using `(i) => i * 1.5`, `"body"` *(hierarchy index 0)* would be `12`
+   * *(scale index 0)*, and `"h1"` *(hierarchy index 6)* would be `42` *(scale
+   * index 9)*.
    *
    * @default (i) => gudTypeScaleIndex(i)
    */
@@ -153,15 +173,12 @@ interface GenerateTypeScaleOptions<TUnit extends string | undefined>
 
   /**
    * An optional unit to add to the returned values. This will change the values
-   * from numbers to strings and is useful when passed directly to a CSS in JS
-   * library like [styled-components](https://github.com/styled-components/styled-components).
+   * from numbers to strings.
    *
    * @default undefined
    */
   unit?: TUnit;
 }
-
-type Value<Tunit> = Tunit extends undefined ? number : string;
 
 /**
  * Generate font sizes and line heights for a given hierarchy of font styles.
@@ -170,13 +187,13 @@ type Value<Tunit> = Tunit extends undefined ? number : string;
  * line heights for.
  * @param options - Options for the type scale.
  */
-export const gudTypeScale = <
-  THierarchy extends string,
-  TUnit extends string | undefined = undefined
+export function gudTypeScale<
+  THierarchy extends string = string,
+  TUnit extends string | undefined = undefined,
 >(
   hierarchy: readonly THierarchy[],
-  options?: GenerateTypeScaleOptions<TUnit>
-) => {
+  options?: GenerateTypeScaleOptions<TUnit>,
+): TypeScale<THierarchy, TUnit> {
   const {
     baseIndex = 0,
     getScaleIndex = gudTypeScaleIndex,
@@ -188,15 +205,7 @@ export const gudTypeScale = <
     lineHeightMultiplier = 1.3,
     unit,
   } = options || {};
-  const typeScale = {} as Record<
-    THierarchy,
-    {
-      fontSize: Value<TUnit>;
-      lineHeight: Value<TUnit>;
-      scaleIndex: number;
-      relativeSize: number;
-    }
-  >;
+  const typeScale = {} as TypeScale<THierarchy, TUnit>;
   for (let i = 0; i < hierarchy.length; i++) {
     const scaleIndex = getScaleIndex(i - baseIndex);
     const fontSize = gudFontSize(scaleIndex, {
@@ -210,11 +219,14 @@ export const gudTypeScale = <
       multiplier: lineHeightMultiplier,
     });
     typeScale[hierarchy[i]] = {
-      fontSize: (unit ? `${fontSize}${unit}` : fontSize) as Value<TUnit>,
-      lineHeight: (unit ? `${lineHeight}${unit}` : lineHeight) as Value<TUnit>,
-      scaleIndex,
-      relativeSize: fontSize / base,
+      fontSize: (unit
+        ? `${fontSize}${unit}`
+        : fontSize) as TypeScaleValue<TUnit>,
+      lineHeight: (unit
+        ? `${lineHeight}${unit}`
+        : lineHeight) as TypeScaleValue<TUnit>,
+      relativeSize: parseFloat((fontSize / base).toFixed(4)),
     };
   }
   return typeScale;
-};
+}

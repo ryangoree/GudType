@@ -42,26 +42,10 @@
   },
   "javascript": {
     "formatter": {
-      "quoteStyle": "double",
+      "quoteStyle": "single",
       "trailingCommas": "all",
       "indentStyle": "space",
       "indentWidth": 2
     }
-  },
-  "overrides": [
-    {
-      "includes": [
-        "contracts/lib/**",
-        "packages/drift/src/artifacts/**",
-        "packages/drift/src/ethereum/ethereum.ts",
-        "packages/drift/src/ethereum/openrpc.json"
-      ],
-      "formatter": {
-        "enabled": false
-      },
-      "linter": {
-        "enabled": false
-      }
-    }
-  ]
+  }
 }

@@ -2,14 +2,30 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "include": ["./*.ts", "src"],
   "compilerOptions": {
+    // Environment
     "target": "esnext",
     "lib": ["esnext"],
-    "module": "esnext",
+    "module": "nodenext",
+    "moduleDetection": "force",
+    "moduleResolution": "nodenext",
+    "isolatedModules": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": ".",
+    "paths": {
+      "src/*": ["src/*"]
+    },
+
+    // Type Checking
     "skipLibCheck": true,
     "strict": true,
+
+    // Output
     "rootDir": "src",
-    "outDir": "lib",
+    "outDir": "dist",
     "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
     "esModuleInterop": true
   }
 }

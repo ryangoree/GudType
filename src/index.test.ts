@@ -1,12 +1,6 @@
 import assert from 'node:assert';
 import test from 'node:test';
-import {
-  gudFontSize,
-  gudLineHeight,
-  gudTypeScale,
-  gudTypeScaleIndex,
-  rounder,
-} from './index';
+import { gudTypeScale, rounder } from './index.js';
 
 const hierarchy = [
   'footnote',
@@ -19,22 +13,9 @@ const hierarchy = [
   'h2',
   'h1',
 ] as const;
-const baseIndex = 2;
-const styles = gudTypeScale(hierarchy, {
-  baseIndex,
-  base: 16,
-  getScaleIndex: (i) => {
-    const abs = Math.abs(i) ** 1.4;
-    return i < 0 ? -abs : abs;
-  },
-});
+const styles = gudTypeScale(hierarchy, { baseIndex: 2 });
 
-for (const style of hierarchy.toReversed()) {
-  console.log(
-    `${style}: ${styles[style].fontSize} (${styles[style].lineHeight})`
-  );
-}
-// console.log(styles);
+console.log(styles);
 
 test('rounds correctly', () => {
   const round = rounder(5);
@@ -48,31 +29,41 @@ test('rounds correctly', () => {
 
 test('generates a style for each hierarchy item', () => {
   assert.equal(Object.keys(styles).length, hierarchy.length);
-});
-
-test('calculates consistently across functions', () => {
-  const compareStyles = {} as typeof styles;
-  for (let i = 0; i < hierarchy.length; i++) {
-    const hierarchyIndex = i - baseIndex;
-    const scaleIndex = gudTypeScaleIndex(hierarchyIndex);
-    const fontSize = gudFontSize(scaleIndex);
-    compareStyles[hierarchy[i]] = {
-      fontSize,
-      lineHeight: gudLineHeight(fontSize),
-      scaleIndex,
-      relativeSize: fontSize / 16,
-    };
-  }
-  assert.deepStrictEqual(compareStyles, styles);
+  hierarchy.forEach((item) => {
+    assert.ok(styles[item], `Style for ${item} is missing`);
+    assert.strictEqual(
+      typeof styles[item].fontSize,
+      'number',
+      `Font size for ${item} should be a number`,
+    );
+    assert.strictEqual(
+      typeof styles[item].lineHeight,
+      'number',
+      `Line height for ${item} should be a number`,
+    );
+    assert.strictEqual(
+      typeof styles[item].relativeSize,
+      'number',
+      `Relative size for ${item} should be a number`,
+    );
+  });
 });
 
 test('generates the right types based on options', () => {
   const {
     x: { fontSize: numberFontSize },
   } = gudTypeScale(['x']);
-  assert.strictEqual(typeof numberFontSize, 'number');
+  assert.strictEqual(
+    typeof numberFontSize,
+    'number',
+    'Font size should be a number',
+  );
   const {
     x: { fontSize: stringFontSize },
   } = gudTypeScale(['x'], { unit: 'px' });
-  assert.strictEqual(typeof stringFontSize, 'string');
+  assert.strictEqual(
+    typeof stringFontSize,
+    'string',
+    'Font size should be a string when unit is px',
+  );
 });

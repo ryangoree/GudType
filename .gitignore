@@ -1,40 +1,29 @@
-# Local
+# local
 *.env
 *.pem
 *.local
 
-# Logs
+# logs
 logs
 _.log
 
-# Artifacts
-build
-cache
+# artifacts
 dist
-generated
-lib
-out
 
-# Testing
+# testing
 coverage
 
-# Package Manager
-*.tgz
+# package manager
 node_modules
-yarn-debug.log*
-yarn-error.log*
+*.tgz
 
-# Language
+# language
 *.tsbuildinfo
 
-# Lib cache
-.turbo
-.vercel
+# os
+.DS_Store
 
-# Editor
+# editor
 .vscode/*
 !.vscode/extensions.json
 !.vscode/settings.json
-
-# OS
-.DS_Store

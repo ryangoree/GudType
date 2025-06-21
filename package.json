@@ -1,15 +1,15 @@
 {
-  "name": "gud-type",
+  "name": "@gud/typescale",
   "description": "A utility for generating type scales.",
-  "version": "1.0.4",
+  "version": "0.0.0",
   "license": "MIT",
   "type": "module",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./lib/index.d.ts",
-      "default": "./lib/index.js"
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
     },
     "./package.json": "./package.json"
   },
@@ -23,11 +23,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "watch": "tsc -p tsconfig.build.json --watch",
-    "format": "biome format --write",
-    "lint": "biome lint --diagnostic-level error .",
-    "lint:fix": "yarn lint --fix",
-    "lint:fix:unsafe": "yarn lint:fix --unsafe",
-    "typecheck": "tsc --noEmit"
+    "release": "changeset publish"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.0.0",
@@ -39,5 +35,5 @@
     "name": "Ryan Goree",
     "url": "https://github.com/ryangoree"
   },
-  "repository": "https://github.com/ryangoree/GudType"
+  "repository": "https://github.com/ryangoree/gud-typescale"
 }
