@@ -1,5 +1,11 @@
 # @gud/typescale
 
+## 1.0.1
+
+### Patch Changes
+
+- 8cdf6ea: Fixed release to actually include build 🤦‍♂️
+
 ## 1.0.0
 
 ### Major Changes
