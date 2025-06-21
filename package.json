@@ -19,9 +19,9 @@
     "typescript": "^5.8.3"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
-    "watch": "tsc -p tsconfig.build.json --watch",
-    "release": "changeset publish"
+    "build": "rm -rf dist && tsc -p tsconfig.build.json",
+    "watch": "rm -rf dist && tsc -p tsconfig.build.json --watch",
+    "release": "npm:build && changeset publish"
   },
   "exports": {
     ".": {
