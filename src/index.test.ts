@@ -92,11 +92,15 @@ describe('gudTypeScaleCss', () => {
     hierarchy.forEach((style) => {
       assert.ok(
         css.includes(`--text-${style}:`),
-        `Missing font size variable for ${style}`,
+        `Missing text variable for ${style}`,
+      );
+      assert.ok(
+        css.includes(`--text-${style}--line-height:`),
+        `Missing line height variable for ${style}`,
       );
       assert.ok(
         css.includes(`--leading-${style}:`),
-        `Missing line height variable for ${style}`,
+        `Missing leading variable for ${style}`,
       );
     });
   });
