@@ -1,6 +1,7 @@
+import { writeFileSync } from 'node:fs';
 import { command } from 'clide-js';
-import { writeFileSync } from 'fs';
 import {
+  DEFAULT_TYPE_SCALE_HIERARCHY,
   gudTypeScale,
   gudTypeScaleCss,
   rounder,
@@ -22,7 +23,7 @@ export default command({
       alias: ['h'],
       description: 'Hierarchy of font styles to generate.',
       type: 'array',
-      default: ['footnote', 'caption', 'p', 'h6', 'h5', 'h4', 'h3', 'h2', 'h1'],
+      default: [...DEFAULT_TYPE_SCALE_HIERARCHY],
     },
     base: {
       alias: ['b'],
@@ -79,6 +80,7 @@ export default command({
       description: 'CSS unit to append to font sizes and line heights.',
       type: 'string',
       customType: 'unit',
+      choices: ['cm', 'mm', 'Q', 'in', 'pc', 'pt', 'px', 'em', 'rem'],
       default: 'rem',
     },
     prefix: {

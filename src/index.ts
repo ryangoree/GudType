@@ -261,7 +261,7 @@ export function gudTypeScale<
   TUnit extends TypeScaleUnit | undefined = undefined,
 >(options?: GenerateTypeScaleOptions<TStyle, TUnit>): TypeScale<TStyle, TUnit> {
   const {
-    hierarchy = DEFAULT_TYPE_SCALE_HIERARCHY as unknown as TStyle[],
+    hierarchy = DEFAULT_TYPE_SCALE_HIERARCHY,
     baseIndex = 2,
     getScaleIndex = gudTypeScaleIndex,
     base = 16,
@@ -273,41 +273,38 @@ export function gudTypeScale<
     unit,
   } = options || {};
 
-  return hierarchy.reduce(
-    (typeScale, style, i) => {
-      const scaleIndex = getScaleIndex(i - baseIndex);
-      const rawFontSize = gudFontSize(scaleIndex, {
-        base,
-        multiplier,
-        steps,
-        round,
-      });
-      const rawLineHeight = gudLineHeight(rawFontSize, {
-        gridHeight,
-        multiplier: lineHeightMultiplier,
-      });
+  return hierarchy.reduce((typeScale, style, i) => {
+    const scaleIndex = getScaleIndex(i - baseIndex);
+    const rawFontSize = gudFontSize(scaleIndex, {
+      base,
+      multiplier,
+      steps,
+      round,
+    });
+    const rawLineHeight = gudLineHeight(rawFontSize, {
+      gridHeight,
+      multiplier: lineHeightMultiplier,
+    });
 
-      let fontSize = rawFontSize as TypeScaleValue<TUnit>;
-      let lineHeight = rawLineHeight as TypeScaleValue<TUnit>;
-      if (unit === 'rem' || unit === 'em') {
-        fontSize =
-          `${parseFloat((rawFontSize / base).toFixed(4))}${unit}` as TypeScaleValue<TUnit>;
-        lineHeight =
-          `${parseFloat((rawLineHeight / base).toFixed(4))}${unit}` as TypeScaleValue<TUnit>;
-      } else if (unit) {
-        fontSize = `${rawFontSize}${unit}` as TypeScaleValue<TUnit>;
-        lineHeight = `${rawLineHeight}${unit}` as TypeScaleValue<TUnit>;
-      }
+    let fontSize = rawFontSize as TypeScaleValue<TUnit>;
+    let lineHeight = rawLineHeight as TypeScaleValue<TUnit>;
+    if (unit === 'rem' || unit === 'em') {
+      fontSize =
+        `${parseFloat((rawFontSize / base).toFixed(4))}${unit}` as TypeScaleValue<TUnit>;
+      lineHeight =
+        `${parseFloat((rawLineHeight / base).toFixed(4))}${unit}` as TypeScaleValue<TUnit>;
+    } else if (unit) {
+      fontSize = `${rawFontSize}${unit}` as TypeScaleValue<TUnit>;
+      lineHeight = `${rawLineHeight}${unit}` as TypeScaleValue<TUnit>;
+    }
 
-      typeScale[style] = {
-        fontSize,
-        lineHeight,
-      };
+    typeScale[style] = {
+      fontSize,
+      lineHeight,
+    };
 
-      return typeScale;
-    },
-    {} as TypeScale<TStyle, TUnit>,
-  );
+    return typeScale;
+  }, {} as TypeScale);
 }
 
 interface TypeScaleCSSOptions<T extends TypeScale = TypeScale> {
@@ -391,7 +388,6 @@ export function gudTypeScaleCss<
       css += `.${prefix ? prefix : ''}leading-${key} {\n`;
       css += `  line-height: var(--${lineHeightVariablePrefix}${key});\n`;
       css += '}\n';
-      css += '\n';
     }
   }
 
