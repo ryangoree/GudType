@@ -18,7 +18,7 @@ export function rounder(
   }
 }
 
-export interface TypeScaleOptions {
+export interface BaseTypeScaleOptions {
   /**
    * The base font size.
    *
@@ -56,7 +56,7 @@ export interface TypeScaleOptions {
  */
 export function gudFontSize(
   scaleIndex: number,
-  options?: TypeScaleOptions,
+  options?: BaseTypeScaleOptions,
 ): number {
   const {
     base = 16,
@@ -160,10 +160,10 @@ export type TypeScale<
   }
 >;
 
-export interface GenerateTypeScaleOptions<
+export interface TypeScaleOptions<
   TStyle extends string = string,
   TUnit extends TypeScaleUnit | undefined = TypeScaleUnit | undefined,
-> extends TypeScaleOptions,
+> extends BaseTypeScaleOptions,
     Omit<LineHeightOptions, 'multiplier'> {
   /**
    * The hierarchy of font styles to generate.
@@ -259,7 +259,7 @@ export type DefaultTypeScaleStyle =
 export function gudTypeScale<
   TStyle extends string = DefaultTypeScaleStyle,
   TUnit extends TypeScaleUnit | undefined = undefined,
->(options?: GenerateTypeScaleOptions<TStyle, TUnit>): TypeScale<TStyle, TUnit> {
+>(options?: TypeScaleOptions<TStyle, TUnit>): TypeScale<TStyle, TUnit> {
   const {
     hierarchy = DEFAULT_TYPE_SCALE_HIERARCHY,
     baseIndex = 2,
@@ -307,7 +307,10 @@ export function gudTypeScale<
   }, {} as TypeScale);
 }
 
-interface TypeScaleCSSOptions<T extends TypeScale = TypeScale> {
+/**
+ * Options for generating CSS for a type scale.
+ */
+export interface TypeScaleCSSOptions<T extends TypeScale = TypeScale> {
   /**
    * The type scale to generate CSS for.
    *
