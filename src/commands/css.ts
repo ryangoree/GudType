@@ -1,6 +1,11 @@
 import { command } from 'clide-js';
 import { writeFileSync } from 'fs';
-import { gudTypeScale, rounder, type TypeScaleUnit } from '../index.js';
+import {
+  gudTypeScale,
+  gudTypeScaleCss,
+  rounder,
+  type TypeScaleUnit,
+} from '../index.js';
 
 declare module 'clide-js' {
   interface OptionCustomTypeMap {
@@ -81,6 +86,12 @@ export default command({
       description: 'Prefix for utility classes.',
       type: 'string',
     },
+    tailwind: {
+      alias: ['t'],
+      description: 'Generate CSS with Tailwind CSS directives.',
+      type: 'boolean',
+      default: false,
+    },
     output: {
       alias: ['o'],
       description: 'Output file path.',
@@ -102,39 +113,23 @@ export default command({
     const lineHeightMultiplier = await options.lineHeightMultiplier();
     const unit = await options.unit();
     const prefix = await options.prefix();
+    const tailwind = await options.tailwind();
     const output = await options.output();
 
-    const typeScale = gudTypeScale({
-      hierarchy,
-      base,
-      baseIndex,
-      multiplier,
-      steps,
-      round: round ? rounder(round, roundDirection) : undefined,
-      gridHeight,
-      lineHeightMultiplier,
-      unit,
-    });
-
-    let css = `/* Generated Gud TypeScale */\n:root {\n`;
-
-    // Generate CSS custom properties
-    Object.entries(typeScale).forEach(([key, value]) => {
-      css += `  --font-size-${key}: ${value.fontSize};\n`;
-      css += `  --line-height-${key}: ${value.lineHeight};\n`;
-    });
-
-    css += `}\n`;
-
-    // Generate utility classes
-    Object.entries(typeScale).forEach(([key]) => {
-      css += `.${prefix ? prefix : ''}text-${key} {\n`;
-      css += `  font-size: var(--font-size-${key});\n`;
-      css += `  line-height: var(--line-height-${key});\n`;
-      css += `}\n`;
-      css += `.${prefix ? prefix : ''}leading-${key} {\n`;
-      css += `  line-height: var(--line-height-${key});\n`;
-      css += `}\n`;
+    const css = gudTypeScaleCss({
+      typeScale: gudTypeScale({
+        hierarchy,
+        base,
+        baseIndex,
+        multiplier,
+        steps,
+        round: round ? rounder(round, roundDirection) : undefined,
+        gridHeight,
+        lineHeightMultiplier,
+        unit,
+      }),
+      prefix,
+      tailwind,
     });
 
     writeFileSync(output, css, 'utf8');

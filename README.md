@@ -27,17 +27,15 @@ npx typescale
 # Remote usage
 npx @gud/typescale
 
-# Custom hierarchy and options
-npx typescale --hierarchy xs sm base lg xl 2xl 3xl 4xl 5xl 6xl --baseIndex 2 --unit rem
+# Custom hierarchy
+npx typescale --hierarchy xs sm base lg xl 2xl 3xl 4xl 5xl 6xl
 
 # Advanced usage
 npx typescale \
   --hierarchy xs sm base lg xl 2xl 3xl 4xl 5xl 6xl \
-  --base 16 \
-  --baseIndex 2 \
-  --multiplier 1.5 \
+  --multiplier 1.618 \
   --steps 4 \
-  --unit rem \
+  --unit px \
   --output ./typescale.css
 ```
 
@@ -58,6 +56,7 @@ npx typescale \
 - `--unit` (`-u`): CSS unit to append to font sizes and line heights. (default:
   `rem`)
 - `--prefix` (`-p`): Prefix for utility classes.
+- `--tailwind` (`-t`): Generate CSS with Tailwind CSS directives. (default: `false`)
 - `--output` (`-o`): Output file path. (default: `typescale.css`)
 
 ## Integrating with Tailwind CSS v4
@@ -65,34 +64,25 @@ npx typescale \
 Since [Tailwind CSS](https://tailwindcss.com/) v4 no longer uses JavaScript
 configuration files, use the CLI to generate CSS at build time:
 
-1. **Install the package:**
-   ```bash
-   npm install --save-dev @gud/typescale
-   ```
-
-2. **Generate CSS:**
-   ```bash
-   npx typescale css --hierarchy xs sm base lg xl 2xl 3xl 4xl 5xl 6xl --baseIndex 2 --unit rem --output ./typescale.css
-   ```
-
-3. **Add to your build process:**
+1. **Add a generation script to your build process:**
    ```json
    {
      "scripts": {
-       "generate:typescale": "typescale --hierarchy xs sm base lg xl 2xl 3xl 4xl 5xl 6x --baseIndex 2 --unit rem --output src/typescale.css",
+       "generate:typescale": "typescale --tailwind --output src/typescale.css",
        "build": "npm run generate:typescale && <your-current-build-command>"
      }
    }
    ```
 
-4. **Import in your CSS:**
+2. **Import in your CSS:**
    ```css
     /* src/index.css */
    @import "./typescale.css";
    ```
 
-5. **Use the generated utilities:**
+3. **Use the generated utilities:**
    ```html
+
    <h1 class="text-6xl">Large Heading</h1>
    <p class="text-base">Body text</p>
    <small class="text-xs">Small text</small>

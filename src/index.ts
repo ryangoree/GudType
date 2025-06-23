@@ -150,10 +150,10 @@ export type TypeScaleValue<TUnit extends TypeScaleUnit | undefined> =
   TUnit extends undefined ? number : string;
 
 export type TypeScale<
-  THierarchy extends string = string,
-  TUnit extends TypeScaleUnit | undefined = undefined,
+  TStyle extends string = string,
+  TUnit extends TypeScaleUnit | undefined = TypeScaleUnit | undefined,
 > = Record<
-  THierarchy,
+  TStyle,
   {
     fontSize: TypeScaleValue<TUnit>;
     lineHeight: TypeScaleValue<TUnit>;
@@ -161,8 +161,8 @@ export type TypeScale<
 >;
 
 export interface GenerateTypeScaleOptions<
-  THierarchy extends string = string,
-  TUnit extends TypeScaleUnit | undefined = undefined,
+  TStyle extends string = string,
+  TUnit extends TypeScaleUnit | undefined = TypeScaleUnit | undefined,
 > extends TypeScaleOptions,
     Omit<LineHeightOptions, 'multiplier'> {
   /**
@@ -172,9 +172,10 @@ export interface GenerateTypeScaleOptions<
    * they should be generated. The first item in the array will be the smallest
    * font size, and the last item will be the largest.
    *
-   * @default ['footnote', 'caption', 'p', 'h6', 'h5', 'h4', 'h3', 'h2', 'h1']
+   * @default DEFAULT_TYPE_SCALE_HIERARCHY
+   * @see {@linkcode DEFAULT_TYPE_SCALE_HIERARCHY}
    */
-  hierarchy?: readonly THierarchy[];
+  hierarchy?: readonly TStyle[];
 
   /**
    * The index of the base font size in the hierarchy.
@@ -184,7 +185,7 @@ export interface GenerateTypeScaleOptions<
    * For example, if the hierarchy is `[footnote, body, ...]`, then the
    * `baseIndex` would be `1` to make the body font size the base font size.
    *
-   * @default 0
+   * @default 2
    */
   baseIndex?: number;
 
@@ -206,6 +207,7 @@ export interface GenerateTypeScaleOptions<
    * index 9)*.
    *
    * @default (i) => gudTypeScaleIndex(i)
+   * @see {@linkcode gudTypeScaleIndex}
    */
   getScaleIndex?: (hierarchyIndex: number) => number;
 
@@ -231,7 +233,7 @@ export interface GenerateTypeScaleOptions<
 /**
  * The default hierarchy of font styles used by {@linkcode gudTypeScale}.
  */
-export const DEFAULT_HIERARCHY = [
+export const DEFAULT_TYPE_SCALE_HIERARCHY = [
   'footnote',
   'caption',
   'p',
@@ -244,21 +246,23 @@ export const DEFAULT_HIERARCHY = [
 ] as const;
 
 /**
+ * The default type scale style.
+ */
+export type DefaultTypeScaleStyle =
+  (typeof DEFAULT_TYPE_SCALE_HIERARCHY)[number];
+
+/**
  * Generate font sizes and line heights for a given hierarchy of font styles.
  *
- * @param hierarchy - An array of font style names to generate font sizes and
- * line heights for.
  * @param options - Options for the type scale.
  */
 export function gudTypeScale<
-  THierarchy extends string = (typeof DEFAULT_HIERARCHY)[number],
+  TStyle extends string = DefaultTypeScaleStyle,
   TUnit extends TypeScaleUnit | undefined = undefined,
->(
-  options?: GenerateTypeScaleOptions<THierarchy, TUnit>,
-): TypeScale<THierarchy, TUnit> {
+>(options?: GenerateTypeScaleOptions<TStyle, TUnit>): TypeScale<TStyle, TUnit> {
   const {
-    hierarchy = DEFAULT_HIERARCHY as unknown as THierarchy[],
-    baseIndex = 0,
+    hierarchy = DEFAULT_TYPE_SCALE_HIERARCHY as unknown as TStyle[],
+    baseIndex = 2,
     getScaleIndex = gudTypeScaleIndex,
     base = 16,
     multiplier = 2,
@@ -269,11 +273,6 @@ export function gudTypeScale<
     unit,
   } = options || {};
 
-  const baseLineHeight = gudLineHeight(base, {
-    gridHeight,
-    multiplier: lineHeightMultiplier,
-  });
-
   return hierarchy.reduce(
     (typeScale, style, i) => {
       const scaleIndex = getScaleIndex(i - baseIndex);
@@ -283,13 +282,10 @@ export function gudTypeScale<
         steps,
         round,
       });
-      const rawLineHeight =
-        i === baseIndex
-          ? baseLineHeight
-          : gudLineHeight(rawFontSize, {
-              gridHeight,
-              multiplier: lineHeightMultiplier,
-            });
+      const rawLineHeight = gudLineHeight(rawFontSize, {
+        gridHeight,
+        multiplier: lineHeightMultiplier,
+      });
 
       let fontSize = rawFontSize as TypeScaleValue<TUnit>;
       let lineHeight = rawLineHeight as TypeScaleValue<TUnit>;
@@ -297,7 +293,7 @@ export function gudTypeScale<
         fontSize =
           `${parseFloat((rawFontSize / base).toFixed(4))}${unit}` as TypeScaleValue<TUnit>;
         lineHeight =
-          `${parseFloat((rawLineHeight / baseLineHeight).toFixed(4))}${unit}` as TypeScaleValue<TUnit>;
+          `${parseFloat((rawLineHeight / base).toFixed(4))}${unit}` as TypeScaleValue<TUnit>;
       } else if (unit) {
         fontSize = `${rawFontSize}${unit}` as TypeScaleValue<TUnit>;
         lineHeight = `${rawLineHeight}${unit}` as TypeScaleValue<TUnit>;
@@ -310,6 +306,90 @@ export function gudTypeScale<
 
       return typeScale;
     },
-    {} as TypeScale<THierarchy, TUnit>,
+    {} as TypeScale<TStyle, TUnit>,
   );
+}
+
+interface TypeScaleCSSOptions<T extends TypeScale = TypeScale> {
+  /**
+   * The type scale to generate CSS for.
+   *
+   * @default gudTypeScale({ unit: 'rem' })
+   * @see {@linkcode gudTypeScale}
+   */
+  typeScale?: T;
+
+  /**
+   * The prefix to use for the CSS classes.
+   */
+  prefix?: string;
+
+  /**
+   * Whether to generate CSS with [Tailwind CSS](https://tailwindcss.com/) v4
+   * directives.
+   *
+   * @default false
+   */
+  tailwind?: boolean;
+}
+
+/**
+ * Generate CSS for a type scale.
+ */
+export function gudTypeScaleCss<
+  const T extends TypeScale = TypeScale<DefaultTypeScaleStyle, undefined>,
+>(options?: TypeScaleCSSOptions<T>): string {
+  const {
+    typeScale = gudTypeScale({ unit: 'rem' }),
+    prefix = '',
+    tailwind = false,
+  } = options || {};
+
+  let css = `/* Generated Gud TypeScale */\n`;
+
+  if (tailwind) {
+    css += `@theme {\n`;
+  } else {
+    css += `:root {\n`;
+  }
+
+  // Generate CSS custom properties (variables)
+  const fontSizeVariablePrefix = tailwind ? 'text-' : 'font-size-';
+  const lineHeightVariablePrefix = tailwind ? 'leading-' : 'line-height-';
+  const fontSizeProperties: string[] = [];
+  const lineHeightProperties: string[] = [];
+  for (const [key, value] of Object.entries(typeScale)) {
+    fontSizeProperties.push(
+      `  --${fontSizeVariablePrefix}${key}: ${value.fontSize};`,
+    );
+    if (tailwind) {
+      fontSizeProperties.push(
+        `  --${fontSizeVariablePrefix}${key}--line-height: ${value.lineHeight};`,
+      );
+    }
+    lineHeightProperties.push(
+      `  --${lineHeightVariablePrefix}${key}: ${value.lineHeight};`,
+    );
+  }
+
+  css += `${fontSizeProperties.join('\n')}\n`;
+  css += `\n`;
+  css += `${lineHeightProperties.join('\n')}\n`;
+  css += `}\n`;
+
+  if (!tailwind) {
+    // Generate utility classes
+    for (const key of Object.keys(typeScale)) {
+      css += `.${prefix ? prefix : ''}text-${key} {\n`;
+      css += `  font-size: var(--${fontSizeVariablePrefix}${key});\n`;
+      css += `  line-height: var(--${lineHeightVariablePrefix}${key});\n`;
+      css += `}\n`;
+      css += `.${prefix ? prefix : ''}leading-${key} {\n`;
+      css += `  line-height: var(--${lineHeightVariablePrefix}${key});\n`;
+      css += `}\n`;
+      css += `\n`;
+    }
+  }
+
+  return css;
 }
