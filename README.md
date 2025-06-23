@@ -68,7 +68,7 @@ configuration files, use the CLI to generate CSS at build time:
    ```json
    {
      "scripts": {
-       "generate:typescale": "typescale --tailwind --output src/typescale.css",
+       "generate:typescale": "typescale --tailwind --output src/styles/typescale.css",
        "build": "npm run generate:typescale && <your-current-build-command>"
      }
    }
@@ -76,7 +76,7 @@ configuration files, use the CLI to generate CSS at build time:
 
 2. **Import in your CSS:**
    ```css
-    /* src/index.css */
+   /* src/styles/index.css */
    @import "./typescale.css";
    ```
 
