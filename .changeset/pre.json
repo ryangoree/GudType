@@ -1,0 +1,10 @@
+{
+  "mode": "pre",
+  "tag": "next",
+  "initialVersions": {
+    "@gud/typescale": "1.0.1"
+  },
+  "changesets": [
+    "great-tools-build"
+  ]
+}
