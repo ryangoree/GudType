@@ -88,8 +88,9 @@ configuration files, use the CLI to generate CSS at build time:
    <small class="text-xs">Small text</small>
    ```
 
-The CLI generates both CSS custom properties and utility classes that work
-seamlessly with Tailwind v4's CSS-first approach.
+With the `tailwind` flag enabled, the CLI generates `text` and `leading`
+properties under the `@theme` directive for seamless integration with Tailwind
+v4.
 
 
 ## Programmatic Usage
