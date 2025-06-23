@@ -1,6 +1,6 @@
 {
   "name": "@gud/typescale",
-  "version": "2.0.0-next.2",
+  "version": "2.0.0",
   "description": "A utility for generating type scales.",
   "license": "MIT",
   "author": "Ryan Goree (https://github.com/ryangoree)",
