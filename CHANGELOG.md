@@ -1,5 +1,11 @@
 # @gud/typescale
 
+## 2.0.1
+
+### Patch Changes
+
+- bcf20ab: Types polish
+
 ## 2.0.0
 
 ### Major Changes
