@@ -1,16 +1,4 @@
 /**
- * A util function for getting an index on a scale for a given hierarchy index.
- * Uses a power function to ensure that the scale is not linear, with special
- * handling for negative indexes.
- *
- * @param index - The hierarchy index of the type style.
- */
-export function gudTypeScaleIndex(index: number): number {
-  const abs = Math.abs(index) ** 1.4;
-  return index < 0 ? -abs : abs;
-}
-
-/**
  * Returns a new rounding function for rounding to a target multiple.
  *
  * @param targetMultiple - The multiple to which the new function will round.
@@ -18,7 +6,7 @@ export function gudTypeScaleIndex(index: number): number {
  */
 export function rounder(
   targetMultiple: number,
-  direction?: 'up' | 'down',
+  direction?: 'up' | 'down' | 'nearest',
 ): (n: number) => number {
   switch (direction) {
     case 'up':
@@ -30,9 +18,9 @@ export function rounder(
   }
 }
 
-interface TypeScaleOptions {
+export interface TypeScaleOptions {
   /**
-   * The starting point for the scale.
+   * The base font size.
    *
    * @default 16
    */
@@ -79,7 +67,7 @@ export function gudFontSize(
   return round(base * multiplier ** (scaleIndex / steps));
 }
 
-interface LineHeightOptions {
+export interface LineHeightOptions {
   /**
    * The multiplier to use when deciding the line height of a given font size.
    * The resulting line height will be rounded up to the closest factor of the
@@ -111,24 +99,83 @@ export function gudLineHeight(
   return rounder(gridHeight, 'up')(fontSize * multiplier);
 }
 
-export type TypeScaleValue<TUnit> = TUnit extends undefined ? number : string;
+/**
+ * A util function for getting an index on a scale for a given hierarchy index.
+ * Uses a power function to ensure that the scale is not linear, with special
+ * handling for negative indexes.
+ *
+ * @param index - The hierarchy index of the type style.
+ */
+export function gudTypeScaleIndex(index: number): number {
+  const abs = Math.abs(index) ** 1.4;
+  return index < 0 ? -abs : abs;
+}
+
+/**
+ * The unit of measurement used in the type scale.
+ *
+ * ### Absolute Length Units
+ *
+ * | Unit   | Name                | Equivalent to            |
+ * | :----- | :------------------ | :----------------------- |
+ * | **cm** | Centimeters         | 1cm = 37.8px = 25.2/64in |
+ * | **mm** | Millimeters         | 1mm = 1/10th of 1cm      |
+ * | **Q**  | Quarter-millimeters | 1Q = 1/40th of 1cm       |
+ * | **in** | Inches              | 1in = 2.54cm = 96px      |
+ * | **pc** | Picas               | 1pc = 1/6th of 1in       |
+ * | **pt** | Points              | 1pt = 1/72nd of 1in      |
+ * | **px** | Pixels              | 1px = 1/96th of 1in      |
+ *
+ * ### Relative Length Units
+ *
+ * | Unit    | Description                                                                                                   |
+ * | :------ | :------------------------------------------------------------------------------------------------------------ |
+ * | **em**  | is relative to the font size of this element, or the font size of the parent element when used for font-size. |
+ * | **rem** | is relative to the font size of the root element.                                                             |
+ *
+ * @see [MDN - Values And Units - Lengths](https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Values_and_units#lengths)
+ */
+export type TypeScaleUnit =
+  | 'cm'
+  | 'mm'
+  | 'Q'
+  | 'in'
+  | 'pc'
+  | 'pt'
+  | 'px'
+  | 'em'
+  | 'rem';
+
+export type TypeScaleValue<TUnit extends TypeScaleUnit | undefined> =
+  TUnit extends undefined ? number : string;
 
 export type TypeScale<
   THierarchy extends string = string,
-  TUnit extends string | undefined = undefined,
+  TUnit extends TypeScaleUnit | undefined = undefined,
 > = Record<
   THierarchy,
   {
     fontSize: TypeScaleValue<TUnit>;
     lineHeight: TypeScaleValue<TUnit>;
-    relativeSize: number;
   }
 >;
 
 export interface GenerateTypeScaleOptions<
-  TUnit extends string | undefined = undefined,
+  THierarchy extends string = string,
+  TUnit extends TypeScaleUnit | undefined = undefined,
 > extends TypeScaleOptions,
     Omit<LineHeightOptions, 'multiplier'> {
+  /**
+   * The hierarchy of font styles to generate.
+   *
+   * This is an array of strings representing the font styles in the order
+   * they should be generated. The first item in the array will be the smallest
+   * font size, and the last item will be the largest.
+   *
+   * @default ['footnote', 'caption', 'p', 'h6', 'h5', 'h4', 'h3', 'h2', 'h1']
+   */
+  hierarchy?: readonly THierarchy[];
+
   /**
    * The index of the base font size in the hierarchy.
    *
@@ -173,12 +220,28 @@ export interface GenerateTypeScaleOptions<
 
   /**
    * An optional unit to add to the returned values. This will change the values
-   * from numbers to strings.
+   * from numbers to strings. If provided a relative unit (`rem` or `em`),
+   * the font sizes will be relative to the base font size.
    *
    * @default undefined
    */
   unit?: TUnit;
 }
+
+/**
+ * The default hierarchy of font styles used by {@linkcode gudTypeScale}.
+ */
+export const DEFAULT_HIERARCHY = [
+  'footnote',
+  'caption',
+  'p',
+  'h6',
+  'h5',
+  'h4',
+  'h3',
+  'h2',
+  'h1',
+] as const;
 
 /**
  * Generate font sizes and line heights for a given hierarchy of font styles.
@@ -188,13 +251,13 @@ export interface GenerateTypeScaleOptions<
  * @param options - Options for the type scale.
  */
 export function gudTypeScale<
-  THierarchy extends string = string,
-  TUnit extends string | undefined = undefined,
+  THierarchy extends string = (typeof DEFAULT_HIERARCHY)[number],
+  TUnit extends TypeScaleUnit | undefined = undefined,
 >(
-  hierarchy: readonly THierarchy[],
-  options?: GenerateTypeScaleOptions<TUnit>,
+  options?: GenerateTypeScaleOptions<THierarchy, TUnit>,
 ): TypeScale<THierarchy, TUnit> {
   const {
+    hierarchy = DEFAULT_HIERARCHY as unknown as THierarchy[],
     baseIndex = 0,
     getScaleIndex = gudTypeScaleIndex,
     base = 16,
@@ -205,28 +268,48 @@ export function gudTypeScale<
     lineHeightMultiplier = 1.3,
     unit,
   } = options || {};
-  const typeScale = {} as TypeScale<THierarchy, TUnit>;
-  for (let i = 0; i < hierarchy.length; i++) {
-    const scaleIndex = getScaleIndex(i - baseIndex);
-    const fontSize = gudFontSize(scaleIndex, {
-      base,
-      multiplier,
-      steps,
-      round,
-    });
-    const lineHeight = gudLineHeight(fontSize, {
-      gridHeight,
-      multiplier: lineHeightMultiplier,
-    });
-    typeScale[hierarchy[i]] = {
-      fontSize: (unit
-        ? `${fontSize}${unit}`
-        : fontSize) as TypeScaleValue<TUnit>,
-      lineHeight: (unit
-        ? `${lineHeight}${unit}`
-        : lineHeight) as TypeScaleValue<TUnit>,
-      relativeSize: parseFloat((fontSize / base).toFixed(4)),
-    };
-  }
-  return typeScale;
+
+  const baseLineHeight = gudLineHeight(base, {
+    gridHeight,
+    multiplier: lineHeightMultiplier,
+  });
+
+  return hierarchy.reduce(
+    (typeScale, style, i) => {
+      const scaleIndex = getScaleIndex(i - baseIndex);
+      const rawFontSize = gudFontSize(scaleIndex, {
+        base,
+        multiplier,
+        steps,
+        round,
+      });
+      const rawLineHeight =
+        i === baseIndex
+          ? baseLineHeight
+          : gudLineHeight(rawFontSize, {
+              gridHeight,
+              multiplier: lineHeightMultiplier,
+            });
+
+      let fontSize = rawFontSize as TypeScaleValue<TUnit>;
+      let lineHeight = rawLineHeight as TypeScaleValue<TUnit>;
+      if (unit === 'rem' || unit === 'em') {
+        fontSize =
+          `${parseFloat((rawFontSize / base).toFixed(4))}${unit}` as TypeScaleValue<TUnit>;
+        lineHeight =
+          `${parseFloat((rawLineHeight / baseLineHeight).toFixed(4))}${unit}` as TypeScaleValue<TUnit>;
+      } else if (unit) {
+        fontSize = `${rawFontSize}${unit}` as TypeScaleValue<TUnit>;
+        lineHeight = `${rawLineHeight}${unit}` as TypeScaleValue<TUnit>;
+      }
+
+      typeScale[style] = {
+        fontSize,
+        lineHeight,
+      };
+
+      return typeScale;
+    },
+    {} as TypeScale<THierarchy, TUnit>,
+  );
 }

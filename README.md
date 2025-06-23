@@ -1,77 +1,169 @@
 # Gud TypeScale
 
 [![GitHub](https://img.shields.io/badge/ryangoree%2Fgud--typescale-151b23?logo=github)](https://github.com/ryangoree/gud-typescale)
-[![NPM Version](https://img.shields.io/badge/%40gud%2Ftypescale-cb3837?logo=npm)](https://npmjs.com/package/@gud/typescale)
-[![License: Apache-2.0](https://img.shields.io/badge/License:%20MIT-23454d)](./LICENSE)
+[![NPM
+Version](https://img.shields.io/badge/%40gud%2Ftypescale-cb3837?logo=npm)](https://npmjs.com/package/@gud/typescale)
+[![License:
+Apache-2.0](https://img.shields.io/badge/License:%20MIT-23454d)](./LICENSE)
 
-A type scale generator heavily inspired by the
-[Typographic Scale Calculator](http://layoutgridcalculator.com/typographic-scale/)
-from [Jean-Lou Désiré](http://www.jeanlou.net/).
+A type scale generator heavily inspired by the [Typographic Scale
+Calculator](http://layoutgridcalculator.com/typographic-scale/) from [Jean-Lou
+Désiré](http://www.jeanlou.net/).
 
-## Basic Usage
+## Installation
+
+```bash
+npm install --save-dev @gud/typescale
+```
+
+## CLI Usage
+
+Generate CSS for use with Tailwind CSS v4 or any CSS framework:
+
+```bash
+# Basic usage
+npx typescale
+
+# Remote usage
+npx @gud/typescale
+
+# Custom hierarchy and options
+npx typescale --hierarchy xs sm base lg xl 2xl 3xl 4xl 5xl 6xl --baseIndex 2 --unit rem
+
+# Advanced usage
+npx typescale \
+  --hierarchy xs sm base lg xl 2xl 3xl 4xl 5xl 6xl \
+  --base 16 \
+  --baseIndex 2 \
+  --multiplier 1.5 \
+  --steps 4 \
+  --unit rem \
+  --output ./typescale.css
+```
+
+### CLI Options
+
+- `--help`: Show help information.
+- `--hierarchy` (`-h`): Hierarchy of font styles to generate. (default:
+  `footnote, caption, p, h6, h5, h4, h3, h2, h1`)
+- `--base` (`-b`): Base font size. (default: `16`)
+- `--baseIndex` (`-i`): Index of the base font size in the hierarchy. (default:
+  `2`)
+- `--multiplier` (`-m`): Increment multiplier. (default: `2`)
+- `--steps` (`-s`): Steps between multiples. (default: `5`)
+- `--round` (`-r`): Font size rounding factor. (default: `0.25`)
+- `--roundDirection` (`-d`): Rounding method: up, down, nearest. (default: `up`)
+- `--gridHeight` (`-g`): Line height grid size. (default: `8`)
+- `--lineHeightMultiplier` (`-l`): Line height multiplier. (default: `1.3`)
+- `--unit` (`-u`): CSS unit to append to font sizes and line heights. (default:
+  `rem`)
+- `--prefix` (`-p`): Prefix for utility classes.
+- `--output` (`-o`): Output file path. (default: `typescale.css`)
+
+## Integrating with Tailwind CSS v4
+
+Since [Tailwind CSS](https://tailwindcss.com/) v4 no longer uses JavaScript
+configuration files, use the CLI to generate CSS at build time:
+
+1. **Install the package:**
+   ```bash
+   npm install --save-dev @gud/typescale
+   ```
+
+2. **Generate CSS:**
+   ```bash
+   npx typescale css --hierarchy xs sm base lg xl 2xl 3xl 4xl 5xl 6xl --baseIndex 2 --unit rem --output ./typescale.css
+   ```
+
+3. **Add to your build process:**
+   ```json
+   {
+     "scripts": {
+       "generate:typescale": "typescale --hierarchy xs sm base lg xl 2xl 3xl 4xl 5xl 6x --baseIndex 2 --unit rem --output src/typescale.css",
+       "build": "npm run generate:typescale && <your-current-build-command>"
+     }
+   }
+   ```
+
+4. **Import in your CSS:**
+   ```css
+    /* src/index.css */
+   @import "./typescale.css";
+   ```
+
+5. **Use the generated utilities:**
+   ```html
+   <h1 class="text-6xl">Large Heading</h1>
+   <p class="text-base">Body text</p>
+   <small class="text-xs">Small text</small>
+   ```
+
+The CLI generates both CSS custom properties and utility classes that work
+seamlessly with Tailwind v4's CSS-first approach.
+
+
+## Programmatic Usage
 
 ```js
-const typeScale = gudTypeScale(
-  ['footnote', 'caption', 'p', 'h6', 'h5', 'h4', 'h3', 'h2', 'h1'],
-  { baseIndex: 2 }
-);
+import { gudTypeScale } from '@gud/typescale';
 
-console.log(typeScale)
+const typeScale = gudTypeScale();
 // {
 //   footnote: {
 //     fontSize: 11.25,
 //     lineHeight: 16,
-//     relativeSize: 0.7031,
 //   },
 //   caption: {
 //     fontSize: 14,
 //     lineHeight: 24,
-//     relativeSize: 0.875,
 //   },
 //   p: {
 //     fontSize: 16,
 //     lineHeight: 24,
-//     relativeSize: 1,
 //   },
 //   h6: {
 //     fontSize: 18.5,
 //     lineHeight: 32,
-//     relativeSize: 1.1563,
 //   },
 //   h5: {
 //     fontSize: 23.25,
 //     lineHeight: 32,
-//     relativeSize: 1.4531,
 //   },
 //   h4: {
 //     fontSize: 30.75,
 //     lineHeight: 40,
-//     relativeSize: 1.9219,
 //   },
 //   h3: {
 //     fontSize: 42.25,
 //     lineHeight: 56,
-//     relativeSize: 2.6406,
 //   },
 //   h2: {
 //     fontSize: 60,
 //     lineHeight: 80,
-//     relativeSize: 3.75,
 //   },
 //   h1: {
 //     fontSize: 88,
 //     lineHeight: 120,
-//     relativeSize: 5.5,
 //   },
 // }
 ```
 
 ## Options
 
+### `hierarchy?: string[]`
+
+The hierarchy of font styles to generate.
+
+This is an array of strings representing the font styles in the order they
+should be generated. The first item in the array will be the smallest font size,
+and the last item will be the largest.
+
+**Default**: `['footnote', 'caption', 'p', 'h6', 'h5', 'h4', 'h3', 'h2', 'h1']`
+
 ### `base?: number`
 
 
-The starting point for the scale.
+The base font size.
 
 **Default**: `16`
 
@@ -103,8 +195,8 @@ The index of the base font size in the hierarchy.
 
 This is useful if you want some styles smaller than the base.
 
-For example, if the hierarchy is `[footnote, body, ...]`, then the
-`baseIndex` would be `1` to make the body font size the base font size.
+For example, if the hierarchy is `[footnote, body, ...]`, then the `baseIndex`
+would be `1` to make the body font size the base font size.
 
 **Default**: `0`
 
@@ -129,15 +221,16 @@ index 0)*, and `"h1"` *(hierarchy index 6)* would be `42` *(scale index 9)*.
 
 ### `lineHeightMultiplier?: number`
 
-The multiplier to use when deciding the line height of a given font size.
-The resulting line height will be rounded up to the closest factor of the
+The multiplier to use when deciding the line height of a given font size. The
+resulting line height will be rounded up to the closest factor of the
 `gridHeight`.
 
 **Default**: `1.3`
 
 ### `unit?: TUnit`
 
-An optional unit to add to the returned values. This will change the values
-from numbers to strings.
+An optional unit to add to the returned values. This will change the values from
+numbers to strings. If provided a relative unit (`rem` or `em`), the font sizes
+will be relative to the base font size.
 
 **Default**: `undefined`

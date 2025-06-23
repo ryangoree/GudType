@@ -1,17 +1,16 @@
 {
   "name": "@gud/typescale",
-  "description": "A utility for generating type scales.",
   "version": "1.0.1",
+  "description": "A utility for generating type scales.",
   "license": "MIT",
   "author": "Ryan Goree (https://github.com/ryangoree)",
   "repository": "https://github.com/ryangoree/gud-typescale",
-  "sideEffects": false,
-  "type": "module",
-  "files": [
-    "dist"
-  ],
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "bin": {
+    "typescale": "./dist/cli.js"
+  },
+  "dependencies": {
+    "clide-js": "^0.3.0-next.8"
+  },
   "devDependencies": {
     "@biomejs/biome": "^2.0.0",
     "@changesets/cli": "^2.29.4",
@@ -23,10 +22,20 @@
     "watch": "rm -rf dist && tsc -p tsconfig.build.json --watch",
     "release": "npm run build && changeset publish"
   },
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./tailwind": {
+      "types": "./dist/tailwind.d.ts",
+      "default": "./dist/tailwind.js"
     },
     "./package.json": "./package.json"
   },
@@ -37,6 +46,7 @@
       ]
     }
   },
+  "sideEffects": false,
   "publishConfig": {
     "access": "public"
   }
