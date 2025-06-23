@@ -139,7 +139,7 @@ const typeScale = gudTypeScale();
 // }
 ```
 
-## Options
+### Options
 
 ### `hierarchy?: string[]`
 
