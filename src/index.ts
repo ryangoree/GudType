@@ -345,12 +345,13 @@ export function gudTypeScaleCss<
     tailwind = false,
   } = options || {};
 
-  let css = `/* Generated Gud TypeScale */\n`;
+  let css = '/* Generated Gud TypeScale */\n';
+  css += '\n';
 
   if (tailwind) {
-    css += `@theme {\n`;
+    css += '@theme {\n';
   } else {
-    css += `:root {\n`;
+    css += ':root {\n';
   }
 
   // Generate CSS custom properties (variables)
@@ -375,21 +376,22 @@ export function gudTypeScaleCss<
   }
 
   css += `${fontSizeProperties.join('\n')}\n`;
-  css += `\n`;
+  css += '\n';
   css += `${lineHeightProperties.join('\n')}\n`;
-  css += `}\n`;
+  css += '}\n';
 
   if (!tailwind) {
     // Generate utility classes
     for (const key of Object.keys(typeScale)) {
+      css += '\n';
       css += `.${prefix}text-${key} {\n`;
       css += `  font-size: var(--${fontSizeVariablePrefix}${key});\n`;
       css += `  line-height: var(--${lineHeightVariablePrefix}${key});\n`;
-      css += `}\n`;
+      css += '}\n';
       css += `.${prefix ? prefix : ''}leading-${key} {\n`;
       css += `  line-height: var(--${lineHeightVariablePrefix}${key});\n`;
-      css += `}\n`;
-      css += `\n`;
+      css += '}\n';
+      css += '\n';
     }
   }
 
