@@ -83,9 +83,9 @@ configuration files, use the CLI to generate CSS at build time:
 3. **Use the generated utilities:**
    ```html
 
-   <h1 class="text-6xl">Large Heading</h1>
-   <p class="text-base">Body text</p>
-   <small class="text-xs">Small text</small>
+   <h1 class="text-h1">Large Heading</h1>
+   <p class="text-p">Body text</p>
+   <small class="text-caption">Small text</small>
    ```
 
 With the `tailwind` flag enabled, the CLI generates `text` and `leading`
