@@ -1,5 +1,11 @@
 # @gud/typescale
 
+## 2.0.2
+
+### Patch Changes
+
+- c3de126: Update README
+
 ## 2.0.1
 
 ### Patch Changes
