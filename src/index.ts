@@ -182,8 +182,8 @@ export interface TypeScaleOptions<
    *
    * This is useful if you want some styles smaller than the base.
    *
-   * For example, if the hierarchy is `[footnote, body, ...]`, then the
-   * `baseIndex` would be `1` to make the body font size the base font size.
+   * For example, if the hierarchy is `["footnote", "body", ...]`, then the
+   * `baseIndex` would be `1` to make `"body"` the base font size.
    *
    * @default 2
    */
@@ -194,8 +194,8 @@ export interface TypeScaleOptions<
    *
    * **Example**
    *
-   * given the following hierarchy: `['body', 'h6', 'h5', 'h4', 'h3', 'h2',
-   * 'h1']` and the following scale: `[12, 14, 16, 18.25, 21, 24, 27.75, 31.75,
+   * given the following hierarchy: `["body", "h6", "h5", "h4", "h3", "h2",
+   * "h1"]` and the following scale: `[12, 14, 16, 18.25, 21, 24, 27.75, 31.75,
    * 36.5, 42, 48]` *(base: 12, multiplier: 2, steps: 5)*
    *
    * A 1 to 1 fn of `(i) => i` would mean `"body"` *(hierarchy index 0)* would
@@ -222,7 +222,7 @@ export interface TypeScaleOptions<
 
   /**
    * An optional unit to add to the returned values. This will change the values
-   * from numbers to strings. If provided a relative unit (`rem` or `em`),
+   * from numbers to strings. If provided a relative unit (`"rem"` or `"em"`),
    * the font sizes will be relative to the base font size.
    *
    * @default undefined

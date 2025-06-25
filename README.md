@@ -96,7 +96,7 @@ v4.
 ## Programmatic Usage
 
 ```js
-import { gudTypeScale } from '@gud/typescale';
+import { gudTypeScale } from "@gud/typescale";
 
 const typeScale = gudTypeScale();
 // {
@@ -149,7 +149,7 @@ This is an array of strings representing the font styles in the order they
 should be generated. The first item in the array will be the smallest font size,
 and the last item will be the largest.
 
-**Default**: `['footnote', 'caption', 'p', 'h6', 'h5', 'h4', 'h3', 'h2', 'h1']`
+**Default**: `["footnote", "caption", "p", "h6", "h5", "h4", "h3", "h2", "h1"]`
 
 ### `base?: number`
 
@@ -177,7 +177,7 @@ The number steps it takes to go from one multiple to the next.
 
 The function used to round font sizes.
 
-**Default**: `rounder(0.25, 'up')`
+**Default**: `rounder(0.25, "up")`
 
 
 ### `baseIndex?: number`
@@ -186,10 +186,10 @@ The index of the base font size in the hierarchy.
 
 This is useful if you want some styles smaller than the base.
 
-For example, if the hierarchy is `[footnote, body, ...]`, then the `baseIndex`
-would be `1` to make the body font size the base font size.
+For example, if the hierarchy is `["footnote", "body", ...]`, then the
+`baseIndex` would be `1` to make `"body"` the base font size.
 
-**Default**: `0`
+**Default**: `2`
 
 ### `getScaleIndex?: (hierarchyIndex: number) => number`
 
@@ -197,7 +197,7 @@ A function to convert hierarchy indexes to scale indexes
 
 #### Example
 
-given the following hierarchy: `['body', 'h6', 'h5', 'h4', 'h3', 'h2', 'h1']`
+given the following hierarchy: `["body", "h6", "h5", "h4", "h3", "h2", "h1"]`
 and the following scale: `[12, 14, 16, 18.25, 21, 24, 27.75, 31.75, 36.5, 42,
 48]` *(base: 12, multiplier: 2, steps: 5)*
 
