@@ -3,7 +3,6 @@
   "include": ["./*.ts", "src"],
   "compilerOptions": {
     // Environment
-    "target": "esnext",
     "lib": ["esnext"],
     "module": "nodenext",
     "moduleDetection": "force",
@@ -17,6 +16,7 @@
     "strict": true,
 
     // Output
+    "target": "esnext",
     "rootDir": "src",
     "outDir": "dist",
     "declaration": true,
