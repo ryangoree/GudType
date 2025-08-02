@@ -1,25 +1,3 @@
-# local
-*.env
-*.pem
-*.local
-
-# logs
-logs
-_.log
-
-# artifacts
-dist
-
-# testing
-coverage
-
-# package manager
-node_modules
-*.tgz
-
-# language
-*.tsbuildinfo
-
 # os
 .DS_Store
 
@@ -27,3 +5,33 @@ node_modules
 .vscode/*
 !.vscode/extensions.json
 !.vscode/settings.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# local
+*.env
+*.pem
+*.local
+
+# ai
+*.ai
+
+# logs
+logs
+_.log
+
+# dependencies
+node_modules
+
+# artifacts
+dist
+results
+*.tsbuildinfo
+*.tgz
+
+# testing
+coverage

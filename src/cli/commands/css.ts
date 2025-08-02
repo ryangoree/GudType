@@ -6,7 +6,7 @@ import {
   gudTypeScaleCss,
   rounder,
   type TypeScaleUnit,
-} from '../index.js';
+} from '#src/lib/index';
 
 declare module 'clide-js' {
   interface OptionCustomTypeMap {
