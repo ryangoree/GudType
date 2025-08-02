@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { help, run } from 'clide-js';
+import { help, run } from '@gud/cli';
 
 run({
   plugins: [

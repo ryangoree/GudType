@@ -1,5 +1,5 @@
 import { writeFileSync } from 'node:fs';
-import { command } from 'clide-js';
+import { command } from '@gud/cli';
 import {
   DEFAULT_TYPE_SCALE_HIERARCHY,
   gudTypeScale,
@@ -8,8 +8,8 @@ import {
   type TypeScaleUnit,
 } from '#src/lib/index';
 
-declare module 'clide-js' {
-  interface OptionCustomTypeMap {
+declare module '@gud/cli' {
+  interface CustomOptionTypes {
     roundDirection: 'up' | 'down' | 'nearest';
     unit: TypeScaleUnit;
   }
