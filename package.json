@@ -4,9 +4,26 @@
   "description": "A utility for generating type scales.",
   "license": "MIT",
   "author": "Ryan Goree (https://github.com/ryangoree)",
-  "repository": "https://github.com/ryangoree/gud-typescale",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ryangoree/gud-typescale.git"
+  },
+  "sideEffects": false,
+  "type": "module",
   "bin": {
-    "typescale": "./dist/cli.js"
+    "typescale": "dist/cli/index.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "rm -rf dist && tsc -p tsconfig.build.json",
+    "watch": "rm -rf dist && tsc -p tsconfig.build.json --watch",
+    "release": "npm run build && changeset publish"
   },
   "dependencies": {
     "clide-js": "^0.3.0-next.8"
@@ -17,36 +34,11 @@
     "@types/node": "^24.0.3",
     "typescript": "^5.8.3"
   },
-  "scripts": {
-    "build": "rm -rf dist && tsc -p tsconfig.build.json",
-    "watch": "rm -rf dist && tsc -p tsconfig.build.json --watch",
-    "release": "npm run build && changeset publish"
-  },
-  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "files": [
     "dist"
   ],
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
-    },
-    "./tailwind": {
-      "types": "./dist/tailwind.d.ts",
-      "default": "./dist/tailwind.js"
-    },
-    "./package.json": "./package.json"
-  },
-  "typesVersions": {
-    "*": {
-      ".": [
-        "./dist/index.d.ts"
-      ]
-    }
-  },
-  "sideEffects": false,
   "publishConfig": {
     "access": "public"
   }
