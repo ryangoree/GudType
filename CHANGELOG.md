@@ -1,5 +1,12 @@
 # @gud/typescale
 
+## 2.0.3
+
+### Patch Changes
+
+- cd02352: Removed unnecessary type defs and source maps from cli.
+- 3269cf0: Updated CLI from clide-js to @gud/cli.
+
 ## 2.0.2
 
 ### Patch Changes
